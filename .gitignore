@@ -1,4 +1,33 @@
+# Environments & Secrets
 .env
+.env.*
+!.env.example
+venv/
+.venv/
+ENV/
+env/
+
+# Python Cache & Bytecode
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# macOS System Files
 .DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor & IDE configs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker persistent database mounts
+postgres_data/
+
+# Logs & Runtime
+*.log
+logs/
