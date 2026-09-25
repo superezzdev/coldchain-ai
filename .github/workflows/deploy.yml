@@ -1,0 +1,40 @@
+name: Production EC2 Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target Deployment Environment'
+        required: true
+        default: 'Production'
+
+jobs:
+  deploy:
+    name: Deploy to AWS EC2
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+            echo "🚀 Navigating to application directory..."
+            cd /home/ubuntu/coldchain-ai || cd /home/ubuntu/clinical-ehr-rag
+            
+            echo "📥 Pulling latest release from GitHub..."
+            git pull origin main
+            
+            echo "🐳 Rebuilding and rolling Docker container..."
+            docker compose down || true
+            docker compose up -d --build
+            
+            echo "🔍 Verifying container health..."
+            docker ps --filter "name=clinical-ehr-rag"
